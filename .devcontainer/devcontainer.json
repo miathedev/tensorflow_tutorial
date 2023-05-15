@@ -1,0 +1,28 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+{
+	"name": "tensorflow",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	//"image": "tensorflow/tensorflow"
+	//Build custom image
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": "."
+	},
+	
+	//Add python extension to vscode
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"ms-vscode-remote.vscode-remote-extensionpack"
+			]
+		},
+	},
+	//Mount .ssh folder, read only, chmod 0600
+	"mounts": [
+		"source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,ro=true,bind-propagation=shared"
+	]
+	
+	
+}
