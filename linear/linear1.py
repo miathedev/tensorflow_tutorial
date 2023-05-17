@@ -12,7 +12,7 @@ model = tf.keras.Sequential([
 model.compile(optimizer='adam', loss='mean_squared_error')
 
 # Generate xs for a range from -1 to 100
-xs = np.arange(-1, 60, 1) #default: 10, on increasing the range, the loss decreases, but not as much
+xs = np.arange(-1, 200, 1) #default: 10, on increasing the range, the loss decreases, but not as much
 ys = xs * 2
 
 # Train the model

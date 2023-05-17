@@ -1,6 +1,7 @@
 # Sign language recognition
 # Model url: https://www.kaggle.com/datasets/ardamavi/sign-language-digits-dataset
 
+import sys
 import matplotlib.pyplot as plt
 import string
 import tensorflow as tf
@@ -18,12 +19,21 @@ print('Train data shape:', train_data.shape)
 train_images = train_data[:, 1:]
 train_labels = train_data[:, 0]
 
+#Reshape train_images to 28x28
+train_images = train_images.reshape(train_images.shape[0], 28, 28)
+
 test_images = test_data[:, 1:]
 test_labels = test_data[:, 0]
 
-# Normalize the data
+#Reshape test_images to 28x28
+test_images = test_images.reshape(test_images.shape[0], 28, 28)
+
+# Normalize the data, dif. term in pipeline, (backprop algo.) -> weight multip, with x>1 way to over sizeing in opt. proc.
 train_images = train_images / 255.0
 test_images = test_images / 255.0
+
+test_images = test_images.reshape((-1, 28, 28, 1))
+train_images = train_images.reshape((-1, 28, 28, 1))
 
 
 # Build the model, feed the images into a 64x64x1 input layer
@@ -38,13 +48,23 @@ test_images = test_images / 255.0
 #     keras.layers.Dense(25, activation='softmax')
 # ])
 
+#Print image shape
+print('Image shape:', train_images.shape);
+#exit
+#sys.exit()
 model = keras.Sequential([
-    # selu: scaled exponential linear unit
-    keras.layers.Dense(784, activation='relu', input_shape=(784,)),
-    # sigmoid: Sigmoid activation function
-    keras.layers.Dense(784, activation='sigmoid'),
-    # softmax for probability distribution
+    #Use Conv2D to extract features from the input image
+    #https://keras.io/api/layers/convolution_layers/convolution2d/
+    #Images are saved in 27455, 28, 28 format
+    #Conv2D: 2D convolution layer (e.g. spatial convolution over images).
+
+    #Pooling, wie groß kann die Bildgröße auf evol. Handy sein
+    keras.layers.Conv2D(28, kernel_size=3, activation='relu', input_shape=(28, 28, 1)),
+    keras.layers.Flatten(),
+    keras.layers.Dropout(0.2),
+    #Dense: Just your regular densely-connected NN layer.
     keras.layers.Dense(25, activation='softmax')
+
 ])
 
 # Compile the model
@@ -55,8 +75,10 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 # Train the model until it doesnt improve anymore
-model.fit(train_images, train_labels, epochs=1000000000000, validation_data=(
-    test_images, test_labels), callbacks=[keras.callbacks.EarlyStopping(patience=50, min_delta=0.00001, restore_best_weights=True)])
+# NOTE: When overfitting, generalisation: from unseen data is getting worse
+model.fit(train_images, train_labels, epochs=1000000000000, 
+          validation_data=(test_images, test_labels), 
+          callbacks=[keras.callbacks.EarlyStopping(patience=10, min_delta=0.000001, restore_best_weights=True)])
 
 
 # Save the model
@@ -104,12 +126,12 @@ for label in images_by_label:
     test_loss, test_acc = model.evaluate(label_test_images, label_test_labels)
     y.append(test_acc)
 
-model_string = ''
-for layer in model.layers:
-    config = layer.get_config()
-    model_string += str(config['units']) + ', act: ' + \
-        str(config['activation']) + '\n'
-print(model_string)
+#model_string = ''
+#for layer in model.layers:
+#    config = layer.get_config()
+#    model_string += str(config['units']) + ', act: ' + \
+#        str(config['activation']) + '\n'
+#print(model_string)
 
 #Log to result.txt
 with open('result.txt', 'a') as f:
@@ -117,7 +139,7 @@ with open('result.txt', 'a') as f:
     f.write('Test accuracy: ' + str(test_acc) + '\n')
     f.write('Test loss: ' + str(test_loss) + '\n')
     f.write('Accuracy for each label: ' + str(y) + '\n')
-    f.write('Model: ' + model_string + '\n')
+ #   f.write('Model: ' + model_string + '\n')
 # ==============================================================================
 plt.close('all')
 plt.figure(figsize=(10, 5))
@@ -131,7 +153,7 @@ plt.title('Accuracy for each label')
 plt.ylabel('Accuracy')
 
 # Add model string to graph, add extra whitespace to make it fit under x-axis
-plt.text(0, 0.1, model_string, bbox=dict(facecolor='red', alpha=0.8))
+#plt.text(0, 0.1, model_string, bbox=dict(facecolor='red', alpha=0.8))
 
 # Add median line
 median = np.median(y)

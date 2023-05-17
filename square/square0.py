@@ -5,7 +5,7 @@ from tensorflow import keras
 # Define the model
 #NOTE: This cant fit the data, keep linear model in mind, what if we handle negative values?
 model = tf.keras.Sequential([
-    keras.layers.Dense(units=1, input_shape=[1]),
+    keras.layers.Dense(units=2, input_shape=[1], activation='relu'),
     keras.layers.Dense(units=1)
 ])
 

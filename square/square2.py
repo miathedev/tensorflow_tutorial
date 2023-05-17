@@ -6,7 +6,9 @@ from tensorflow import keras
 # NOTE: This shit needs a lot of time. What if we could stop earlier when we are happy with the result?
 model = tf.keras.Sequential([
     keras.layers.Dense(units=16, input_shape=[1], activation='relu'),
-    keras.layers.Dense(units=16, activation='relu'), #NOTE: Show add 6 more layers
+    keras.layers.Dense(units=16, activation='relu'),
+    keras.layers.Dense(units=16, activation='relu'),
+    keras.layers.Dense(units=16, activation='relu'),
     keras.layers.Dense(units=16, activation='relu'),
     keras.layers.Dense(units=16, activation='relu'),
     keras.layers.Dense(units=16, activation='relu'),
