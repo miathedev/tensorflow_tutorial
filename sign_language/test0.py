@@ -59,11 +59,24 @@ model = keras.Sequential([
     #Conv2D: 2D convolution layer (e.g. spatial convolution over images).
 
     #Pooling, wie groß kann die Bildgröße auf evol. Handy sein
-    keras.layers.Conv2D(28, kernel_size=3, activation='relu', input_shape=(28, 28, 1)),
-    keras.layers.Flatten(),
+    keras.layers.Conv2D(64, kernel_size=3, activation='relu', input_shape=(28, 28, 1)),
+    keras.layers.BatchNormalization(),
+    keras.layers.MaxPool2D((2,2),strides=2),
+    
+    keras.layers.Dropout(0.2), # Dropping random 2% data out for learning variety.
+    
+    keras.layers.Conv2D(32,(3,3),padding="same",activation="relu"),
+    keras.layers.BatchNormalization(),
+    keras.layers.MaxPool2D((2,2),strides=2),
+    
     keras.layers.Dropout(0.2),
-    #Dense: Just your regular densely-connected NN layer.
-    keras.layers.Dense(25, activation='softmax')
+    
+    keras.layers.Conv2D(16,(3,3),padding="same",activation="relu"),
+    keras.layers.BatchNormalization(),
+    keras.layers.MaxPool2D((2,2)),
+    
+    keras.layers.Flatten(),
+    keras.layers.Dense(25,activation="softmax")
 
 ])
 
